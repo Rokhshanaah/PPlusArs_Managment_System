@@ -1,0 +1,18 @@
+PUT THE OFFICIAL ZKTECO SDK FILES HERE.
+
+Required from the official "ZKFinger SDK Windows" package:
+- libzkfpcsharp.dll
+- libzkfp.dll (and any native DLLs included by your SDK build)
+- the matching ZKTeco USB driver must be installed in Windows
+
+Do not rename the DLL files.
+
+Because these are ZKTeco proprietary SDK/driver files, they are intentionally
+NOT included in this ZIP. Download/install them from ZKTeco's official SDK package.
+
+If the official Demo included with your SDK does not detect the scanner,
+the bridge cannot detect it either. Fix driver/USB/bitness first.
+
+This project is configured as x86 / .NET Framework 4.8 because many ZKFinger
+Windows SDK distributions are 32-bit. If your supplied SDK is x64, change the
+project platform to x64 and use the x64 SDK DLLs consistently.

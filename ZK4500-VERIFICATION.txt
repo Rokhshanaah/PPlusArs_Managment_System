@@ -1,0 +1,22 @@
+ZK4500 INTEGRATION VERIFICATION
+================================
+
+Server JavaScript syntax:
+- server/src/routes/card-reader.js: OK
+- server/src/models/index.js: OK
+- server/src/db/ensureSchema.js: OK
+- frontend/src/utils/zktecoDevice.js: OK
+
+Server tests:
+- 6 passed, 0 failed
+
+Frontend production build in the sandbox could not be completed because the
+uploaded RAR contained Windows-installed node_modules while this validation
+environment is Linux. Vite/Rolldown therefore requested its Linux native
+optional binding. The final ZIP intentionally excludes node_modules; run
+`npm install` on the target Windows PC so npm installs the correct Windows
+native packages.
+
+Hardware runtime:
+Requires the official ZKTeco ZKFinger Windows SDK runtime/driver DLLs in
+zkteco-bridge/sdk. Proprietary ZKTeco DLL files are not redistributed here.

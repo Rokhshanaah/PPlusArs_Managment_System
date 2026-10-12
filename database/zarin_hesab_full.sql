@@ -1,0 +1,565 @@
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+CREATE DATABASE IF NOT EXISTS `zarin_hesab`
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+USE `zarin_hesab`;
+
+CREATE TABLE IF NOT EXISTS `currencies` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(120) NOT NULL,
+  `code` VARCHAR(10) NOT NULL,
+  `country` VARCHAR(120) NULL,
+  `symbol` VARCHAR(20) NULL,
+  `sign` VARCHAR(20) NULL,
+  `decimal_places` TINYINT UNSIGNED NOT NULL DEFAULT 2,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `is_base` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_currencies_code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `branches` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(120) NOT NULL,
+  `city` VARCHAR(120) NOT NULL,
+  `address` VARCHAR(255) NULL,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `customers` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(120) NOT NULL,
+  `father_name` VARCHAR(120) NULL,
+  `phone` VARCHAR(30) NOT NULL,
+  `address` VARCHAR(255) NULL,
+  `document_type` VARCHAR(80) NULL,
+  `document_number` VARCHAR(80) NULL,
+  `trust_level` VARCHAR(50) NOT NULL DEFAULT 'عادی',
+  `state` VARCHAR(50) NOT NULL DEFAULT 'تأیید شده',
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_customers_phone` (`phone`),
+  KEY `idx_customers_document` (`document_number`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `cashboxes` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `branch_id` INT UNSIGNED NOT NULL,
+  `name` VARCHAR(120) NOT NULL,
+  `keeper_name` VARCHAR(120) NULL,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cashboxes_branch` (`branch_id`),
+  CONSTRAINT `fk_cashboxes_branch` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `cashbox_balances` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `cashbox_id` INT UNSIGNED NOT NULL,
+  `currency_id` INT UNSIGNED NOT NULL,
+  `amount` DECIMAL(22,6) NOT NULL DEFAULT 0,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_cashbox_currency` (`cashbox_id`,`currency_id`),
+  KEY `idx_cashbox_balances_currency` (`currency_id`),
+  CONSTRAINT `fk_cashbox_balances_cashbox` FOREIGN KEY (`cashbox_id`) REFERENCES `cashboxes` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT `fk_cashbox_balances_currency` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `exchange_rates` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `from_currency_id` INT UNSIGNED NOT NULL,
+  `to_currency_id` INT UNSIGNED NOT NULL,
+  `buy_rate` DECIMAL(22,8) NOT NULL,
+  `sell_rate` DECIMAL(22,8) NOT NULL,
+  `special_rate` DECIMAL(22,8) NULL,
+  `branch_id` INT UNSIGNED NULL,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_rates_pair` (`from_currency_id`,`to_currency_id`),
+  KEY `idx_rates_branch` (`branch_id`),
+  CONSTRAINT `fk_rates_from_currency` FOREIGN KEY (`from_currency_id`) REFERENCES `currencies` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_rates_to_currency` FOREIGN KEY (`to_currency_id`) REFERENCES `currencies` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_rates_branch` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `accounts` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(120) NOT NULL,
+  `kind` VARCHAR(80) NOT NULL,
+  `owner_name` VARCHAR(120) NULL,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `transactions` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `number` VARCHAR(80) NOT NULL,
+  `kind` VARCHAR(80) NOT NULL,
+  `customer_id` INT UNSIGNED NULL,
+  `branch_id` INT UNSIGNED NOT NULL,
+  `cashbox_id` INT UNSIGNED NOT NULL,
+  `from_currency_id` INT UNSIGNED NOT NULL,
+  `to_currency_id` INT UNSIGNED NOT NULL,
+  `from_amount` DECIMAL(22,6) NOT NULL,
+  `to_amount` DECIMAL(22,6) NOT NULL,
+  `rate` DECIMAL(22,8) NOT NULL,
+  `fee` DECIMAL(22,6) NOT NULL DEFAULT 0,
+  `profit` DECIMAL(22,6) NOT NULL DEFAULT 0,
+  `state` VARCHAR(50) NOT NULL DEFAULT 'تکمیل شده',
+  `note` TEXT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_transactions_number` (`number`),
+  KEY `idx_transactions_created` (`created_at`),
+  KEY `idx_transactions_customer` (`customer_id`),
+  KEY `idx_transactions_branch` (`branch_id`),
+  KEY `idx_transactions_cashbox` (`cashbox_id`),
+  CONSTRAINT `fk_transactions_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT `fk_transactions_branch` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_transactions_cashbox` FOREIGN KEY (`cashbox_id`) REFERENCES `cashboxes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_transactions_from_currency` FOREIGN KEY (`from_currency_id`) REFERENCES `currencies` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_transactions_to_currency` FOREIGN KEY (`to_currency_id`) REFERENCES `currencies` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `remittances` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `number` VARCHAR(80) NOT NULL,
+  `sender_id` INT UNSIGNED NULL,
+  `receiver_name` VARCHAR(120) NOT NULL,
+  `receiver_phone` VARCHAR(30) NULL,
+  `from_branch_id` INT UNSIGNED NOT NULL,
+  `to_branch_id` INT UNSIGNED NOT NULL,
+  `currency_id` INT UNSIGNED NOT NULL,
+  `source_cashbox_id` INT UNSIGNED NULL,
+  `destination_cashbox_id` INT UNSIGNED NULL,
+  `amount` DECIMAL(22,6) NOT NULL,
+  `fee` DECIMAL(22,6) NOT NULL DEFAULT 0,
+  `secret_number` VARCHAR(30) NOT NULL,
+  `state` VARCHAR(50) NOT NULL DEFAULT 'در انتظار پرداخت',
+  `note` TEXT NULL,
+  `paid_at` DATETIME NULL,
+  `cancelled_at` DATETIME NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_remittances_number` (`number`),
+  KEY `idx_remittances_state` (`state`),
+  CONSTRAINT `fk_remittances_sender` FOREIGN KEY (`sender_id`) REFERENCES `customers` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT `fk_remittances_from_branch` FOREIGN KEY (`from_branch_id`) REFERENCES `branches` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_remittances_to_branch` FOREIGN KEY (`to_branch_id`) REFERENCES `branches` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_remittances_currency` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_remittances_source_cashbox` FOREIGN KEY (`source_cashbox_id`) REFERENCES `cashboxes` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT `fk_remittances_destination_cashbox` FOREIGN KEY (`destination_cashbox_id`) REFERENCES `cashboxes` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `journal_entries` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `number` VARCHAR(80) NOT NULL,
+  `entry_date` DATE NOT NULL,
+  `description` VARCHAR(255) NOT NULL,
+  `debit_account` VARCHAR(120) NOT NULL,
+  `credit_account` VARCHAR(120) NOT NULL,
+  `currency_id` INT UNSIGNED NOT NULL,
+  `amount` DECIMAL(22,6) NOT NULL,
+  `branch_id` INT UNSIGNED NULL,
+  `created_by_name` VARCHAR(120) NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_journal_number` (`number`),
+  KEY `idx_journal_entry_date` (`entry_date`),
+  CONSTRAINT `fk_journal_currency` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_journal_branch` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(120) NOT NULL,
+  `phone` VARCHAR(30) NULL,
+  `username` VARCHAR(80) NOT NULL,
+  `password` VARCHAR(255) NOT NULL,
+  `role` VARCHAR(80) NOT NULL DEFAULT 'صندوق‌دار',
+  `permissions` JSON NULL,
+  `branch_id` INT UNSIGNED NULL,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `last_seen_at` DATETIME NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_users_username` (`username`),
+  CONSTRAINT `fk_users_branch` FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `system_settings` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `setting_key` VARCHAR(120) NOT NULL,
+  `setting_value` TEXT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_system_settings_key` (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `audit_logs` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `person` VARCHAR(120) NULL,
+  `action` VARCHAR(255) NOT NULL,
+  `ip_address` VARCHAR(80) NULL,
+  `device` VARCHAR(500) NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_audit_created` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `customer_ledgers` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `customer_id` INT UNSIGNED NOT NULL,
+  `currency_id` INT UNSIGNED NOT NULL,
+  `cashbox_id` INT UNSIGNED NULL,
+  `type` VARCHAR(30) NOT NULL,
+  `amount` DECIMAL(22,6) NOT NULL,
+  `number` VARCHAR(80) NOT NULL,
+  `note` TEXT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_customer_ledgers_customer` (`customer_id`),
+  KEY `idx_customer_ledgers_currency` (`currency_id`),
+  CONSTRAINT `fk_customer_ledgers_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_customer_ledgers_currency` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT `fk_customer_ledgers_cashbox` FOREIGN KEY (`cashbox_id`) REFERENCES `cashboxes` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `customer_balances` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `customer_id` INT UNSIGNED NOT NULL,
+  `currency_id` INT UNSIGNED NOT NULL,
+  `amount` DECIMAL(22,6) NOT NULL DEFAULT 0,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_customer_balance` (`customer_id`,`currency_id`),
+  CONSTRAINT `fk_customer_balances_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT `fk_customer_balances_currency` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `customer_account_entries` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `customer_id` INT UNSIGNED NOT NULL,
+  `currency_id` INT UNSIGNED NOT NULL,
+  `type` VARCHAR(30) NOT NULL,
+  `amount` DECIMAL(18,2) NOT NULL,
+  `number` VARCHAR(80) NULL,
+  `note` TEXT NULL,
+  `entry_date` DATETIME NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_customer_account_entries_customer` (`customer_id`),
+  CONSTRAINT `fk_customer_account_entries_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT `fk_customer_account_entries_currency` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+-- Existing Laravel data
+USE `zarin_hesab`;
+
+SET NAMES utf8mb4;
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+DELETE FROM `customer_account_entries`;
+
+DELETE FROM `customer_balances`;
+
+DELETE FROM `customer_ledgers`;
+
+DELETE FROM `audit_logs`;
+
+DELETE FROM `system_settings`;
+
+DELETE FROM `users`;
+
+DELETE FROM `journal_entries`;
+
+DELETE FROM `remittances`;
+
+DELETE FROM `transactions`;
+
+DELETE FROM `accounts`;
+
+DELETE FROM `exchange_rates`;
+
+DELETE FROM `cashbox_balances`;
+
+DELETE FROM `cashboxes`;
+
+DELETE FROM `customers`;
+
+DELETE FROM `branches`;
+
+DELETE FROM `currencies`;
+
+INSERT INTO `currencies` (`id`,`name`,`code`,`country`,`symbol`,`sign`,`decimal_places`,`is_active`,`is_base`,`created_at`,`updated_at`) VALUES
+  (1,'افغانی','AFN','افغانستان','؋','؋',2,1,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (2,'دالر امریکا','USD','امریکا','$','$',2,1,1,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (3,'یورو','EUR','اتحادیه اروپا','€','€',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (4,'پوند برتانیا','GBP','برتانیا','£','£',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (5,'درهم امارات','AED','امارات','د.ا','د.ا',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (6,'ریال سعودی','SAR','عربستان سعودی','ر.س','ر.س',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (7,'کلدار پاکستان','PKR','پاکستان','₨','₨',2,1,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (8,'ریال ایران','IRR','ایران','﷼','﷼',2,1,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (9,'روپیه هند','INR','هند','₹','₹',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (10,'یوان چین','CNY','چین','¥','¥',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (11,'ین جاپان','JPY','جاپان','¥','¥',0,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (12,'لیره ترکیه','TRY','ترکیه','₺','₺',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (13,'روبل روسیه','RUB','روسیه','₽','₽',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (14,'فرانک سویس','CHF','سویس','Fr','Fr',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (15,'دالر کانادا','CAD','کانادا','$','$',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (16,'دالر آسترالیا','AUD','آسترالیا','$','$',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (17,'دالر زیلند نو','NZD','زیلند نو','$','$',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (18,'دینار کویت','KWD','کویت','د.ک','د.ک',3,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (19,'ریال قطر','QAR','قطر','ر.ق','ر.ق',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (20,'ریال عمان','OMR','عمان','ر.ع','ر.ع',3,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (21,'دینار بحرین','BHD','بحرین','د.ب','د.ب',3,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (22,'دینار اردن','JOD','اردن','د.ا','د.ا',3,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (23,'دینار عراق','IQD','عراق','د.ع','د.ع',3,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (24,'پوند مصر','EGP','مصر','ج.م','ج.م',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (25,'تنگه قزاقستان','KZT','قزاقستان','₸','₸',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (26,'سوم ازبکستان','UZS','ازبکستان','soʻm','soʻm',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (27,'سامانی تاجیکستان','TJS','تاجیکستان','ЅМ','ЅМ',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (28,'منات ترکمنستان','TMT','ترکمنستان','m','m',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (29,'سوم قرغزستان','KGS','قرغزستان','с','с',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (30,'منات آذربایجان','AZN','آذربایجان','₼','₼',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (31,'لاری گرجستان','GEL','گرجستان','₾','₾',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (32,'درام ارمنستان','AMD','ارمنستان','֏','֏',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (33,'تکه بنگله‌دیش','BDT','بنگله‌دیش','৳','৳',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (34,'روپیه نیپال','NPR','نیپال','₨','₨',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (35,'روپیه سریلانکا','LKR','سریلانکا','₨','₨',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (36,'روفیه مالدیو','MVR','مالدیو','Rf','Rf',2,0,0,'2026-06-20 05:55:57','2026-06-23 06:18:42'),
+  (37,'بات تایلند','THB','تایلند','฿','฿',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (38,'رینگیت مالیزیا','MYR','مالیزیا','RM','RM',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (39,'دالر سنگاپور','SGD','سنگاپور','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (40,'روپیه اندونیزیا','IDR','اندونیزیا','Rp','Rp',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (41,'پیسو فیلیپین','PHP','فیلیپین','₱','₱',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (42,'دونگ ویتنام','VND','ویتنام','₫','₫',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (43,'وون کوریای جنوبی','KRW','کوریای جنوبی','₩','₩',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (44,'دالر هانگ کانگ','HKD','هانگ کانگ','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (45,'دالر تایوان','TWD','تایوان','NT$','NT$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (46,'پاتاکای ماکائو','MOP','ماکائو','MOP$','MOP$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (47,'دالر برونی','BND','برونی','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (48,'کیات میانمار','MMK','میانمار','K','K',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (49,'ریال کمبودیا','KHR','کمبودیا','៛','៛',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (50,'کیپ لاوس','LAK','لاوس','₭','₭',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (51,'توگروگ مغولستان','MNT','مغولستان','₮','₮',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (52,'رند افریقای جنوبی','ZAR','افریقای جنوبی','R','R',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (53,'درهم مراکش','MAD','مراکش','د.م','د.م',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (54,'دینار الجزایر','DZD','الجزایر','د.ج','د.ج',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (55,'دینار تونس','TND','تونس','د.ت','د.ت',3,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (56,'دینار لیبیا','LYD','لیبیا','ل.د','ل.د',3,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (57,'پوند سودان','SDG','سودان','ج.س','ج.س',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (58,'بیر ایتوپیا','ETB','ایتوپیا','Br','Br',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (59,'شلنگ کینیا','KES','کینیا','KSh','KSh',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (60,'شلنگ تانزانیا','TZS','تانزانیا','TSh','TSh',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (61,'شلنگ یوگندا','UGX','یوگندا','USh','USh',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (62,'فرانک رواندا','RWF','رواندا','RF','RF',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (63,'فرانک بوروندی','BIF','بوروندی','FBu','FBu',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (64,'شلنگ سومالیا','SOS','سومالیا','Sh','Sh',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (65,'فرانک جیبوتی','DJF','جیبوتی','Fdj','Fdj',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (66,'نایرا نایجریا','NGN','نایجریا','₦','₦',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (67,'سیدی گانا','GHS','گانا','₵','₵',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (68,'فرانک افریقای غربی','XOF','کشورهای افریقای غربی','CFA','CFA',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (69,'فرانک افریقای مرکزی','XAF','کشورهای افریقای مرکزی','FCFA','FCFA',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (70,'دلاسی گامبیا','GMD','گامبیا','D','D',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (71,'لیون سیرالیون','SLL','سیرالیون','Le','Le',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (72,'دالر لیبریا','LRD','لیبریا','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (73,'فرانک گینیا','GNF','گینیا','FG','FG',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (74,'اوگیا موریتانیا','MRU','موریتانیا','UM','UM',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (75,'اسکودو کیپ ورد','CVE','کیپ ورد','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (76,'متیکال موزمبیق','MZN','موزمبیق','MT','MT',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (77,'کواچا زامبیا','ZMW','زامبیا','ZK','ZK',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (78,'کواچا مالاوی','MWK','مالاوی','MK','MK',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (79,'پولا بوتسوانا','BWP','بوتسوانا','P','P',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (80,'دالر نامیبیا','NAD','نامیبیا','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (81,'لیلانگینی اسواتینی','SZL','اسواتینی','L','L',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (82,'لوتی لیسوتو','LSL','لیسوتو','L','L',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (83,'آریاری ماداگاسکر','MGA','ماداگاسکر','Ar','Ar',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (84,'روپیه موریس','MUR','موریس','₨','₨',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (85,'روپیه سیشل','SCR','سیشل','₨','₨',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (86,'کوانزای آنگولا','AOA','آنگولا','Kz','Kz',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (87,'فرانک کانگو','CDF','کانگو','FC','FC',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (88,'ریال برازیل','BRL','برازیل','R$','R$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (89,'پیسو ارجنتین','ARS','ارجنتین','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (90,'پیسو چیلی','CLP','چیلی','$','$',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (91,'پیسو کولمبیا','COP','کولمبیا','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (92,'سول پیرو','PEN','پیرو','S/','S/',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (93,'پیسو یوروگوای','UYU','یوروگوای','$U','$U',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (94,'گوارانی پاراگوای','PYG','پاراگوای','₲','₲',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (95,'بولیویانو بولیویا','BOB','بولیویا','Bs','Bs',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (96,'بولیوار وینزویلا','VES','وینزویلا','Bs','Bs',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (97,'دالر گویانا','GYD','گویانا','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (98,'دالر سورینام','SRD','سورینام','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (99,'پیسو مکسیکو','MXN','مکسیکو','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (100,'کتزال گواتیمالا','GTQ','گواتیمالا','Q','Q',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (101,'لمپیرا هندوراس','HNL','هندوراس','L','L',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (102,'کوردوبا نیکاراگوا','NIO','نیکاراگوا','C$','C$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (103,'کولون کاستاریکا','CRC','کاستاریکا','₡','₡',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (104,'بالبوای پاناما','PAB','پاناما','B/.','B/.',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (105,'پیسو دومینیکن','DOP','دومینیکن','RD$','RD$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (106,'گورد هائیتی','HTG','هائیتی','G','G',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (107,'دالر جامائیکا','JMD','جامائیکا','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (108,'دالر باربادوس','BBD','باربادوس','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (109,'دالر ترینیداد و توباگو','TTD','ترینیداد و توباگو','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (110,'دالر کارائیب شرقی','XCD','کارائیب شرقی','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (111,'دالر باهاما','BSD','باهاما','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (112,'دالر بلیز','BZD','بلیز','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (113,'پیسو کیوبا','CUP','کیوبا','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (114,'فلورین آروبا','AWG','آروبا','ƒ','ƒ',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (115,'گلدن انتیل هالند','ANG','کوراسائو و سنت مارتن','ƒ','ƒ',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (116,'کرونای آیسلند','ISK','آیسلند','kr','kr',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (117,'کرونای ناروی','NOK','ناروی','kr','kr',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (118,'کرونای سویدن','SEK','سویدن','kr','kr',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (119,'کرونای دنمارک','DKK','دنمارک','kr','kr',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (120,'زلوتی پولند','PLN','پولند','zł','zł',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (121,'کرونای چک','CZK','چک','Kč','Kč',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (122,'فورینت مجارستان','HUF','مجارستان','Ft','Ft',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (123,'لیو رومانیا','RON','رومانیا','lei','lei',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (124,'لیف بلغاریا','BGN','بلغاریا','лв','лв',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (125,'دینار سربیا','RSD','سربیا','дин','дин',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (126,'لک البانیا','ALL','البانیا','L','L',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (127,'دینار مقدونیه','MKD','مقدونیه شمالی','ден','ден',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (128,'مارک بوسنیا','BAM','بوسنیا و هرزگووینا','KM','KM',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (129,'لیو مولداویا','MDL','مولداویا','L','L',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (130,'هریونای اوکراین','UAH','اوکراین','₴','₴',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (131,'روبل بلاروس','BYN','بلاروس','Br','Br',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (132,'شکل اسرائیل','ILS','اسرائیل','₪','₪',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (133,'پوند لبنان','LBP','لبنان','ل.ل','ل.ل',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (134,'پوند سوریه','SYP','سوریه','ل.س','ل.س',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (135,'ریال یمن','YER','یمن','ر.ي','ر.ي',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (136,'فرانک اقیانوسیه','XPF','اقیانوسیه فرانسه','₣','₣',0,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (137,'دالر فیجی','FJD','فیجی','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (138,'کینای پاپوا گینه نو','PGK','پاپوا گینه نو','K','K',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (139,'دالر جزایر سلیمان','SBD','جزایر سلیمان','$','$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (140,'پاآنگای تونگا','TOP','تونگا','T$','T$',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42'),
+  (141,'تالای ساموا','WST','ساموا','T','T',2,0,0,'2026-06-20 05:55:58','2026-06-23 06:18:42');
+
+INSERT INTO `branches` (`id`,`name`,`city`,`address`,`is_active`,`created_at`,`updated_at`) VALUES
+  (1,'شعبه مرکزی','هرات','جبریل',1,'2026-06-20 09:11:03','2026-06-20 09:11:03');
+
+INSERT INTO `customers` (`id`,`name`,`father_name`,`phone`,`address`,`document_type`,`document_number`,`trust_level`,`state`,`created_at`,`updated_at`) VALUES
+  (1,'احمد','محمد','078974736','هرات','تذکره','878478','خوب','تأیید شده','2026-06-20 06:16:39','2026-06-20 06:16:39'),
+  (2,'زلمی','زمری','089497','هرات','تذکره','878437483','عادی','تأیید شده','2026-06-20 06:52:12','2026-06-20 06:52:12'),
+  (3,'ظاهر','تواب','89439','','تذکره','847834','پرخطر','پرخطر','2026-06-20 06:54:54','2026-06-20 06:54:54'),
+  (4,'تواب','احمد','08938473','','پاسپورت','7436473','عادی','تأیید شده','2026-06-20 09:33:44','2026-06-20 09:33:44'),
+  (6,'ظاهر','احمد','98938787','','تذکره','123455','خوب','تأیید شده','2026-06-28 04:31:34','2026-06-28 04:31:34'),
+  (7,'سارا','احمد','0788743647','','تذکره','324343','عادی','تأیید شده','2026-06-28 06:15:31','2026-06-28 06:15:31');
+
+INSERT INTO `cashboxes` (`id`,`branch_id`,`name`,`keeper_name`,`is_active`,`created_at`,`updated_at`) VALUES
+  (1,1,'مرکزی','احمد',1,'2026-06-20 09:11:29','2026-06-20 09:11:29'),
+  (2,1,'صندوق اول','تواب',1,'2026-06-20 09:58:43','2026-06-20 09:58:43');
+
+INSERT INTO `cashbox_balances` (`id`,`cashbox_id`,`currency_id`,`amount`,`created_at`,`updated_at`) VALUES
+  (1,1,2,59765.923520924,'2026-06-20 09:16:04','2026-06-28 04:43:40'),
+  (2,1,1,1004550,'2026-06-20 09:17:43','2026-06-28 04:43:40'),
+  (3,1,7,399878.44155844,'2026-06-20 10:03:26','2026-06-22 05:25:17');
+
+INSERT INTO `exchange_rates` (`id`,`from_currency_id`,`to_currency_id`,`buy_rate`,`sell_rate`,`special_rate`,`branch_id`,`is_active`,`created_at`,`updated_at`) VALUES
+  (1,1,58,71.3,71.66,NULL,NULL,1,'2026-06-20 06:17:31','2026-06-20 06:17:31'),
+  (2,1,7,66,88,NULL,NULL,1,'2026-06-20 06:22:46','2026-06-20 06:22:46');
+
+INSERT INTO `accounts` (`id`,`name`,`kind`,`owner_name`,`is_active`,`created_at`,`updated_at`) VALUES
+  (1,'احسان','مشتری','احسان',1,'2026-06-20 10:23:10','2026-06-20 10:23:10');
+
+INSERT INTO `transactions` (`id`,`number`,`kind`,`customer_id`,`branch_id`,`cashbox_id`,`from_currency_id`,`to_currency_id`,`from_amount`,`to_amount`,`rate`,`fee`,`profit`,`state`,`note`,`created_at`,`updated_at`) VALUES
+  (1,'TR-20260620092830-669','فروش پول',1,1,1,1,2,594000,9000,66,0,0,'تکمیل شده',NULL,'2026-06-20 09:28:30','2026-06-20 09:28:30'),
+  (2,'TR-20260620100129-589','خرید پول',4,1,1,2,1,100,5500,55,0,0,'تکمیل شده',NULL,'2026-06-20 10:01:29','2026-06-20 10:01:29'),
+  (3,'TR-20260620101836-745','تبدیل پول',1,1,1,1,7,10000,113.63636363636,88,0,0,'تکمیل شده',NULL,'2026-06-20 10:18:36','2026-06-20 10:18:36'),
+  (4,'TR-20260621103433-617','فروش پول',1,1,1,1,2,5000,56.818181818182,88,0,0,'تکمیل شده',NULL,'2026-06-21 10:34:33','2026-06-21 10:34:33'),
+  (5,'TR-20260621103605-178','خرید پول',2,1,1,1,2,9000,90.909090909091,99,0,0,'تکمیل شده',NULL,'2026-06-21 10:36:05','2026-06-21 10:36:05'),
+  (6,'TR-20260621103638-676','تبدیل پول',3,1,1,2,1,5000,325000,65,0,0,'تکمیل شده',NULL,'2026-06-21 10:36:38','2026-06-21 10:36:38'),
+  (7,'TR-20260621104127-135','خرید پول',3,1,1,1,7,6000,7.9220779220779,77,70,70,'تکمیل شده',NULL,'2026-06-21 10:41:27','2026-06-21 10:41:27'),
+  (8,'TR-20260622051252-515','تبدیل پول',1,1,1,1,2,8000,126.98412698413,63,0,0,'تکمیل شده',NULL,'2026-06-22 05:12:52','2026-06-22 05:12:52'),
+  (9,'TR-20260622052517-891','تبدیل پول',4,1,1,7,1,200000,50000,0.25,0,0,'تکمیل شده',NULL,'2026-06-22 05:25:17','2026-06-22 05:25:17'),
+  (10,'TR-20260628043907-679','خرید پول',3,1,1,1,2,5000,59.365079365079,63,20,20,'تکمیل شده',NULL,'2026-06-28 04:39:07','2026-06-28 04:39:07'),
+  (11,'TR-20260628044340-278','فروش پول',3,1,1,2,1,4000,251950,63,50,50,'تکمیل شده',NULL,'2026-06-28 04:43:40','2026-06-28 04:43:40');
+
+INSERT INTO `users` (`id`,`name`,`phone`,`username`,`password`,`role`,`permissions`,`branch_id`,`is_active`,`last_seen_at`,`created_at`,`updated_at`) VALUES
+  (1,'مدیر کل','0700000000','admin','$2y$12$AxGDrYrQOLDzjn7hKcJ/1OQqhOUSPZNlgKIJhgkGamw...MaS9h7W','مدیر کل','["dashboard","customers","accounts","currencies","rates","buy","sell","exchange","remittances","cashboxes","balance","reports","branches","staff","audit","settings"]',NULL,1,'2026-07-04 06:13:22','2026-06-20 05:55:57','2026-07-04 06:13:22'),
+  (2,'حسابدار','07897276','accountent','$2y$12$3rvaLStKspPMBD25bFUutujSn4w3x.mGZQayinKzlvnOcZf.yLOJy','حسابدار','["dashboard","customers","accounts","currencies","rates","buy","sell","exchange","remittances","cashboxes","balance","reports","branches","staff","audit","settings"]',1,1,NULL,'2026-06-23 11:53:41','2026-06-23 11:53:41');
+
+INSERT INTO `system_settings` (`id`,`setting_key`,`setting_value`,`created_at`,`updated_at`) VALUES
+  (1,'company_name','PPlus.Arz','2026-06-20 05:55:57','2026-06-20 05:55:57'),
+  (2,'company_slogan','بخش مدیریتی صرافی چند پولی','2026-06-20 05:55:57','2026-06-20 05:55:57'),
+  (3,'company_phone','0700000000','2026-06-20 05:55:57','2026-06-20 05:55:57'),
+  (4,'company_address','افغانستان','2026-06-20 05:55:57','2026-06-20 05:55:57'),
+  (5,'large_transaction_limit','10000','2026-06-20 05:55:57','2026-06-20 05:55:57'),
+  (6,'receipt_note','رسید بدون مهر و امضا اعتبار ندارد.','2026-06-20 05:55:57','2026-06-20 05:55:57'),
+  (7,'daily_backup','روشن','2026-06-20 05:55:57','2026-06-20 05:55:57'),
+  (8,'manager_approval','روشن','2026-06-20 05:55:57','2026-06-20 05:55:57');
+
+INSERT INTO `audit_logs` (`id`,`person`,`action`,`ip_address`,`device`,`created_at`) VALUES
+  (1,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-20 05:56:23'),
+  (2,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-20 11:08:59'),
+  (3,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-20 11:32:32'),
+  (4,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-20 11:34:20'),
+  (5,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-20 11:45:06'),
+  (6,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-20 12:05:32'),
+  (7,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-21 05:51:59'),
+  (8,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-21 05:52:01'),
+  (9,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-21 05:57:50'),
+  (10,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-21 07:23:02'),
+  (11,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-21 08:00:31'),
+  (12,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-21 08:49:05'),
+  (13,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-21 08:57:58'),
+  (14,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-22 04:36:44'),
+  (15,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-22 06:39:57'),
+  (16,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-22 08:09:44'),
+  (17,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-22 09:31:41'),
+  (18,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-22 09:41:35'),
+  (19,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-23 04:01:35'),
+  (20,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-23 04:01:38'),
+  (21,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-23 04:12:52'),
+  (22,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-23 07:28:46'),
+  (23,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-23 11:50:16'),
+  (24,'مدیر کل','کارمند نو ساخته شد: حسابدار','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-23 11:53:41'),
+  (25,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-27 14:28:47'),
+  (26,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-27 15:34:55'),
+  (27,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-28 04:02:52'),
+  (28,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-06-28 04:27:54'),
+  (29,'مدیر کل','وارد سامانه شد','127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36','2026-07-04 06:13:22');
+
+INSERT INTO `customer_ledgers` (`id`,`customer_id`,`currency_id`,`cashbox_id`,`type`,`amount`,`number`,`note`,`created_at`,`updated_at`) VALUES
+  (1,1,1,NULL,'رسید شده',50000,'CL-20260620065132-753','','2026-06-20 06:51:32','2026-06-20 06:51:32'),
+  (2,2,2,NULL,'برد شده',20000,'CL-20260620065256-327','','2026-06-20 06:52:56','2026-06-20 06:52:56'),
+  (3,3,2,NULL,'برد شده',30000,'CL-20260620065528-465','','2026-06-20 06:55:28','2026-06-20 06:55:28'),
+  (4,3,1,NULL,'رسید شده',40000,'CL-20260620065813-347','','2026-06-20 06:58:13','2026-06-20 06:58:13'),
+  (5,2,2,1,'رسید شده',60000,'CL-20260620091604-683','','2026-06-20 09:16:04','2026-06-20 09:16:04'),
+  (6,1,1,1,'رسید شده',1000000,'CL-20260620091743-989','','2026-06-20 09:17:43','2026-06-20 09:17:43'),
+  (7,4,7,1,'رسید شده',200000,'CL-20260620100326-281','','2026-06-20 10:03:26','2026-06-20 10:03:26'),
+  (8,7,1,2,'opening',10000,'CL-20260704071957-222','','2026-07-04 07:19:57','2026-07-04 07:19:57');
+
+INSERT INTO `customer_balances` (`id`,`customer_id`,`currency_id`,`amount`,`created_at`,`updated_at`) VALUES
+  (1,7,1,6000,'2026-06-28 08:10:47','2026-06-28 08:10:47');
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+SELECT 'PPlus.Arz legacy data imported successfully.' AS result;

@@ -1,0 +1,16 @@
+PPlus.Arz — Windows Installer
+=============================
+
+Before install:
+- You need the installation password from the software provider.
+- After install, MySQL must be running (XAMPP → Start MySQL).
+
+After install:
+1) Open desktop shortcut: PPlus.Arz
+2) A small window stays open while the app is running
+3) Browser opens http://localhost:5001
+4) Login: admin / 12345678
+
+Node.js is embedded. You do NOT need to install Node.js separately.
+
+Note: This installs to PPlus.Arz.App and does not replace other PPlus apps.

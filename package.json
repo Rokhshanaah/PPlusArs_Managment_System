@@ -1,0 +1,33 @@
+{
+  "name": "pplus-arz-node24-mysql",
+  "version": "3.0.0",
+  "private": true,
+  "description": "PPlus.Arz exchange accounting system - React, Express, Socket.io and MySQL",
+  "type": "module",
+  "packageManager": "npm@11.13.0",
+  "engines": {
+    "node": ">=24.16.0 <25",
+    "npm": ">=11.13.0 <12"
+  },
+  "workspaces": [
+    "server",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail --names API,WEB \"npm run dev --workspace @pplus-arz/server\" \"npm run dev --workspace @pplus-arz/frontend\"",
+    "start": "npm run start --workspace @pplus-arz/server",
+    "build": "npm run build --workspace @pplus-arz/frontend",
+    "test": "npm run test --workspace @pplus-arz/server",
+    "check": "npm run test && npm run build",
+    "db:setup": "npm run db:setup --workspace @pplus-arz/server",
+    "db:seed": "npm run db:seed --workspace @pplus-arz/server",
+    "db:import-legacy": "npm run db:import-legacy --workspace @pplus-arz/server",
+    "db:import-legacy:force": "npm run db:import-legacy:force --workspace @pplus-arz/server",
+    "db:import-sql": "npm run db:import-sql --workspace @pplus-arz/server",
+    "pack:portable": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/build-portable.ps1",
+    "pack:installer": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/build-installer.ps1 -SkipPortableRebuild"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.3"
+  }
+}

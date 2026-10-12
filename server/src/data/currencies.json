@@ -1,0 +1,989 @@
+[
+  {
+    "name": "افغانی",
+    "code": "AFN",
+    "country": "افغانستان",
+    "symbol": "؋",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر امریکا",
+    "code": "USD",
+    "country": "امریکا",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "یورو",
+    "code": "EUR",
+    "country": "اتحادیه اروپا",
+    "symbol": "€",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پوند برتانیا",
+    "code": "GBP",
+    "country": "برتانیا",
+    "symbol": "£",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "درهم امارات",
+    "code": "AED",
+    "country": "امارات",
+    "symbol": "د.ا",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "ریال سعودی",
+    "code": "SAR",
+    "country": "عربستان سعودی",
+    "symbol": "ر.س",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کلدار پاکستان",
+    "code": "PKR",
+    "country": "پاکستان",
+    "symbol": "₨",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "ریال ایران",
+    "code": "IRR",
+    "country": "ایران",
+    "symbol": "﷼",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "روپیه هند",
+    "code": "INR",
+    "country": "هند",
+    "symbol": "₹",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "یوان چین",
+    "code": "CNY",
+    "country": "چین",
+    "symbol": "¥",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "ین جاپان",
+    "code": "JPY",
+    "country": "جاپان",
+    "symbol": "¥",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "لیره ترکیه",
+    "code": "TRY",
+    "country": "ترکیه",
+    "symbol": "₺",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "روبل روسیه",
+    "code": "RUB",
+    "country": "روسیه",
+    "symbol": "₽",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "فرانک سویس",
+    "code": "CHF",
+    "country": "سویس",
+    "symbol": "Fr",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر کانادا",
+    "code": "CAD",
+    "country": "کانادا",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر آسترالیا",
+    "code": "AUD",
+    "country": "آسترالیا",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر زیلند نو",
+    "code": "NZD",
+    "country": "زیلند نو",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دینار کویت",
+    "code": "KWD",
+    "country": "کویت",
+    "symbol": "د.ک",
+    "decimalPlaces": 3
+  },
+  {
+    "name": "ریال قطر",
+    "code": "QAR",
+    "country": "قطر",
+    "symbol": "ر.ق",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "ریال عمان",
+    "code": "OMR",
+    "country": "عمان",
+    "symbol": "ر.ع",
+    "decimalPlaces": 3
+  },
+  {
+    "name": "دینار بحرین",
+    "code": "BHD",
+    "country": "بحرین",
+    "symbol": "د.ب",
+    "decimalPlaces": 3
+  },
+  {
+    "name": "دینار اردن",
+    "code": "JOD",
+    "country": "اردن",
+    "symbol": "د.ا",
+    "decimalPlaces": 3
+  },
+  {
+    "name": "دینار عراق",
+    "code": "IQD",
+    "country": "عراق",
+    "symbol": "د.ع",
+    "decimalPlaces": 3
+  },
+  {
+    "name": "پوند مصر",
+    "code": "EGP",
+    "country": "مصر",
+    "symbol": "ج.م",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "تنگه قزاقستان",
+    "code": "KZT",
+    "country": "قزاقستان",
+    "symbol": "₸",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "سوم ازبکستان",
+    "code": "UZS",
+    "country": "ازبکستان",
+    "symbol": "soʻm",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "سامانی تاجیکستان",
+    "code": "TJS",
+    "country": "تاجیکستان",
+    "symbol": "ЅМ",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "منات ترکمنستان",
+    "code": "TMT",
+    "country": "ترکمنستان",
+    "symbol": "m",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "سوم قرغزستان",
+    "code": "KGS",
+    "country": "قرغزستان",
+    "symbol": "с",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "منات آذربایجان",
+    "code": "AZN",
+    "country": "آذربایجان",
+    "symbol": "₼",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "لاری گرجستان",
+    "code": "GEL",
+    "country": "گرجستان",
+    "symbol": "₾",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "درام ارمنستان",
+    "code": "AMD",
+    "country": "ارمنستان",
+    "symbol": "֏",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "تکه بنگله‌دیش",
+    "code": "BDT",
+    "country": "بنگله‌دیش",
+    "symbol": "৳",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "روپیه نیپال",
+    "code": "NPR",
+    "country": "نیپال",
+    "symbol": "₨",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "روپیه سریلانکا",
+    "code": "LKR",
+    "country": "سریلانکا",
+    "symbol": "₨",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "روفیه مالدیو",
+    "code": "MVR",
+    "country": "مالدیو",
+    "symbol": "Rf",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "بات تایلند",
+    "code": "THB",
+    "country": "تایلند",
+    "symbol": "฿",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "رینگیت مالیزیا",
+    "code": "MYR",
+    "country": "مالیزیا",
+    "symbol": "RM",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر سنگاپور",
+    "code": "SGD",
+    "country": "سنگاپور",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "روپیه اندونیزیا",
+    "code": "IDR",
+    "country": "اندونیزیا",
+    "symbol": "Rp",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "پیسو فیلیپین",
+    "code": "PHP",
+    "country": "فیلیپین",
+    "symbol": "₱",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دونگ ویتنام",
+    "code": "VND",
+    "country": "ویتنام",
+    "symbol": "₫",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "وون کوریای جنوبی",
+    "code": "KRW",
+    "country": "کوریای جنوبی",
+    "symbol": "₩",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "دالر هانگ کانگ",
+    "code": "HKD",
+    "country": "هانگ کانگ",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر تایوان",
+    "code": "TWD",
+    "country": "تایوان",
+    "symbol": "NT$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پاتاکای ماکائو",
+    "code": "MOP",
+    "country": "ماکائو",
+    "symbol": "MOP$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر برونی",
+    "code": "BND",
+    "country": "برونی",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کیات میانمار",
+    "code": "MMK",
+    "country": "میانمار",
+    "symbol": "K",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "ریال کمبودیا",
+    "code": "KHR",
+    "country": "کمبودیا",
+    "symbol": "៛",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کیپ لاوس",
+    "code": "LAK",
+    "country": "لاوس",
+    "symbol": "₭",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "توگروگ مغولستان",
+    "code": "MNT",
+    "country": "مغولستان",
+    "symbol": "₮",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "رند افریقای جنوبی",
+    "code": "ZAR",
+    "country": "افریقای جنوبی",
+    "symbol": "R",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "درهم مراکش",
+    "code": "MAD",
+    "country": "مراکش",
+    "symbol": "د.م",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دینار الجزایر",
+    "code": "DZD",
+    "country": "الجزایر",
+    "symbol": "د.ج",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دینار تونس",
+    "code": "TND",
+    "country": "تونس",
+    "symbol": "د.ت",
+    "decimalPlaces": 3
+  },
+  {
+    "name": "دینار لیبیا",
+    "code": "LYD",
+    "country": "لیبیا",
+    "symbol": "ل.د",
+    "decimalPlaces": 3
+  },
+  {
+    "name": "پوند سودان",
+    "code": "SDG",
+    "country": "سودان",
+    "symbol": "ج.س",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "بیر ایتوپیا",
+    "code": "ETB",
+    "country": "ایتوپیا",
+    "symbol": "Br",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "شلنگ کینیا",
+    "code": "KES",
+    "country": "کینیا",
+    "symbol": "KSh",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "شلنگ تانزانیا",
+    "code": "TZS",
+    "country": "تانزانیا",
+    "symbol": "TSh",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "شلنگ یوگندا",
+    "code": "UGX",
+    "country": "یوگندا",
+    "symbol": "USh",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "فرانک رواندا",
+    "code": "RWF",
+    "country": "رواندا",
+    "symbol": "RF",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "فرانک بوروندی",
+    "code": "BIF",
+    "country": "بوروندی",
+    "symbol": "FBu",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "شلنگ سومالیا",
+    "code": "SOS",
+    "country": "سومالیا",
+    "symbol": "Sh",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "فرانک جیبوتی",
+    "code": "DJF",
+    "country": "جیبوتی",
+    "symbol": "Fdj",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "نایرا نایجریا",
+    "code": "NGN",
+    "country": "نایجریا",
+    "symbol": "₦",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "سیدی گانا",
+    "code": "GHS",
+    "country": "گانا",
+    "symbol": "₵",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "فرانک افریقای غربی",
+    "code": "XOF",
+    "country": "کشورهای افریقای غربی",
+    "symbol": "CFA",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "فرانک افریقای مرکزی",
+    "code": "XAF",
+    "country": "کشورهای افریقای مرکزی",
+    "symbol": "FCFA",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "دلاسی گامبیا",
+    "code": "GMD",
+    "country": "گامبیا",
+    "symbol": "D",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "لیون سیرالیون",
+    "code": "SLL",
+    "country": "سیرالیون",
+    "symbol": "Le",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر لیبریا",
+    "code": "LRD",
+    "country": "لیبریا",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "فرانک گینیا",
+    "code": "GNF",
+    "country": "گینیا",
+    "symbol": "FG",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "اوگیا موریتانیا",
+    "code": "MRU",
+    "country": "موریتانیا",
+    "symbol": "UM",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "اسکودو کیپ ورد",
+    "code": "CVE",
+    "country": "کیپ ورد",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "متیکال موزمبیق",
+    "code": "MZN",
+    "country": "موزمبیق",
+    "symbol": "MT",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کواچا زامبیا",
+    "code": "ZMW",
+    "country": "زامبیا",
+    "symbol": "ZK",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کواچا مالاوی",
+    "code": "MWK",
+    "country": "مالاوی",
+    "symbol": "MK",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پولا بوتسوانا",
+    "code": "BWP",
+    "country": "بوتسوانا",
+    "symbol": "P",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر نامیبیا",
+    "code": "NAD",
+    "country": "نامیبیا",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "لیلانگینی اسواتینی",
+    "code": "SZL",
+    "country": "اسواتینی",
+    "symbol": "L",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "لوتی لیسوتو",
+    "code": "LSL",
+    "country": "لیسوتو",
+    "symbol": "L",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "آریاری ماداگاسکر",
+    "code": "MGA",
+    "country": "ماداگاسکر",
+    "symbol": "Ar",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "روپیه موریس",
+    "code": "MUR",
+    "country": "موریس",
+    "symbol": "₨",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "روپیه سیشل",
+    "code": "SCR",
+    "country": "سیشل",
+    "symbol": "₨",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کوانزای آنگولا",
+    "code": "AOA",
+    "country": "آنگولا",
+    "symbol": "Kz",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "فرانک کانگو",
+    "code": "CDF",
+    "country": "کانگو",
+    "symbol": "FC",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "ریال برازیل",
+    "code": "BRL",
+    "country": "برازیل",
+    "symbol": "R$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پیسو ارجنتین",
+    "code": "ARS",
+    "country": "ارجنتین",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پیسو چیلی",
+    "code": "CLP",
+    "country": "چیلی",
+    "symbol": "$",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "پیسو کولمبیا",
+    "code": "COP",
+    "country": "کولمبیا",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "سول پیرو",
+    "code": "PEN",
+    "country": "پیرو",
+    "symbol": "S/",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پیسو یوروگوای",
+    "code": "UYU",
+    "country": "یوروگوای",
+    "symbol": "$U",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "گوارانی پاراگوای",
+    "code": "PYG",
+    "country": "پاراگوای",
+    "symbol": "₲",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "بولیویانو بولیویا",
+    "code": "BOB",
+    "country": "بولیویا",
+    "symbol": "Bs",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "بولیوار وینزویلا",
+    "code": "VES",
+    "country": "وینزویلا",
+    "symbol": "Bs",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر گویانا",
+    "code": "GYD",
+    "country": "گویانا",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر سورینام",
+    "code": "SRD",
+    "country": "سورینام",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پیسو مکسیکو",
+    "code": "MXN",
+    "country": "مکسیکو",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کتزال گواتیمالا",
+    "code": "GTQ",
+    "country": "گواتیمالا",
+    "symbol": "Q",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "لمپیرا هندوراس",
+    "code": "HNL",
+    "country": "هندوراس",
+    "symbol": "L",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کوردوبا نیکاراگوا",
+    "code": "NIO",
+    "country": "نیکاراگوا",
+    "symbol": "C$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کولون کاستاریکا",
+    "code": "CRC",
+    "country": "کاستاریکا",
+    "symbol": "₡",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "بالبوای پاناما",
+    "code": "PAB",
+    "country": "پاناما",
+    "symbol": "B/.",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پیسو دومینیکن",
+    "code": "DOP",
+    "country": "دومینیکن",
+    "symbol": "RD$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "گورد هائیتی",
+    "code": "HTG",
+    "country": "هائیتی",
+    "symbol": "G",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر جامائیکا",
+    "code": "JMD",
+    "country": "جامائیکا",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر باربادوس",
+    "code": "BBD",
+    "country": "باربادوس",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر ترینیداد و توباگو",
+    "code": "TTD",
+    "country": "ترینیداد و توباگو",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر کارائیب شرقی",
+    "code": "XCD",
+    "country": "کارائیب شرقی",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر باهاما",
+    "code": "BSD",
+    "country": "باهاما",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر بلیز",
+    "code": "BZD",
+    "country": "بلیز",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پیسو کیوبا",
+    "code": "CUP",
+    "country": "کیوبا",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "فلورین آروبا",
+    "code": "AWG",
+    "country": "آروبا",
+    "symbol": "ƒ",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "گلدن انتیل هالند",
+    "code": "ANG",
+    "country": "کوراسائو و سنت مارتن",
+    "symbol": "ƒ",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کرونای آیسلند",
+    "code": "ISK",
+    "country": "آیسلند",
+    "symbol": "kr",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "کرونای ناروی",
+    "code": "NOK",
+    "country": "ناروی",
+    "symbol": "kr",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کرونای سویدن",
+    "code": "SEK",
+    "country": "سویدن",
+    "symbol": "kr",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کرونای دنمارک",
+    "code": "DKK",
+    "country": "دنمارک",
+    "symbol": "kr",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "زلوتی پولند",
+    "code": "PLN",
+    "country": "پولند",
+    "symbol": "zł",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کرونای چک",
+    "code": "CZK",
+    "country": "چک",
+    "symbol": "Kč",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "فورینت مجارستان",
+    "code": "HUF",
+    "country": "مجارستان",
+    "symbol": "Ft",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "لیو رومانیا",
+    "code": "RON",
+    "country": "رومانیا",
+    "symbol": "lei",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "لیف بلغاریا",
+    "code": "BGN",
+    "country": "بلغاریا",
+    "symbol": "лв",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دینار سربیا",
+    "code": "RSD",
+    "country": "سربیا",
+    "symbol": "дин",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "لک البانیا",
+    "code": "ALL",
+    "country": "البانیا",
+    "symbol": "L",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دینار مقدونیه",
+    "code": "MKD",
+    "country": "مقدونیه شمالی",
+    "symbol": "ден",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "مارک بوسنیا",
+    "code": "BAM",
+    "country": "بوسنیا و هرزگووینا",
+    "symbol": "KM",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "لیو مولداویا",
+    "code": "MDL",
+    "country": "مولداویا",
+    "symbol": "L",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "هریونای اوکراین",
+    "code": "UAH",
+    "country": "اوکراین",
+    "symbol": "₴",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "روبل بلاروس",
+    "code": "BYN",
+    "country": "بلاروس",
+    "symbol": "Br",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "شکل اسرائیل",
+    "code": "ILS",
+    "country": "اسرائیل",
+    "symbol": "₪",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پوند لبنان",
+    "code": "LBP",
+    "country": "لبنان",
+    "symbol": "ل.ل",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پوند سوریه",
+    "code": "SYP",
+    "country": "سوریه",
+    "symbol": "ل.س",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "ریال یمن",
+    "code": "YER",
+    "country": "یمن",
+    "symbol": "ر.ي",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "فرانک اقیانوسیه",
+    "code": "XPF",
+    "country": "اقیانوسیه فرانسه",
+    "symbol": "₣",
+    "decimalPlaces": 0
+  },
+  {
+    "name": "دالر فیجی",
+    "code": "FJD",
+    "country": "فیجی",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "کینای پاپوا گینه نو",
+    "code": "PGK",
+    "country": "پاپوا گینه نو",
+    "symbol": "K",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "دالر جزایر سلیمان",
+    "code": "SBD",
+    "country": "جزایر سلیمان",
+    "symbol": "$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "پاآنگای تونگا",
+    "code": "TOP",
+    "country": "تونگا",
+    "symbol": "T$",
+    "decimalPlaces": 2
+  },
+  {
+    "name": "تالای ساموا",
+    "code": "WST",
+    "country": "ساموا",
+    "symbol": "T",
+    "decimalPlaces": 2
+  }
+]

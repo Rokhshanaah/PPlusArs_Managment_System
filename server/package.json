@@ -1,0 +1,36 @@
+{
+  "name": "@pplus-arz/server",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.16.0 <25",
+    "npm": ">=11.13.0 <12"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "db:setup": "node scripts/setup-db.js",
+    "db:seed": "node scripts/seed.js",
+    "db:import-legacy": "node scripts/import-legacy.js",
+    "db:import-legacy:force": "node scripts/import-legacy.js --force",
+    "test": "node --test tests/*.test.js",
+    "db:import-sql": "node scripts/import-sql.js"
+  },
+  "dependencies": {
+    "bcryptjs": "3.0.3",
+    "cors": "2.8.6",
+    "decimal.js": "10.6.0",
+    "dotenv": "17.4.2",
+    "express": "5.2.1",
+    "express-rate-limit": "8.5.2",
+    "helmet": "8.3.0",
+    "jsonwebtoken": "9.0.3",
+    "morgan": "1.11.0",
+    "multer": "2.0.2",
+    "mysql2": "3.22.6",
+    "sequelize": "6.37.8",
+    "socket.io": "4.8.3",
+    "zod": "4.4.3"
+  }
+}
